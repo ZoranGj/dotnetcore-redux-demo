@@ -1,18 +1,31 @@
-﻿import React from 'react'
+﻿import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-const Units = (onChange) => (
-    <select onChange={onChange}>
-        <option value="1">Org unit 1</option>
-        <option value="2">Org unit 2</option>
-        <option value="3">Org unit 3</option>
-        <option value="4">Org unit 4</option>
-        <option value="5">Org unit 5</option>
-    </select>
-)
-
-Units.propTypes = {
-    onChange: PropTypes.func.isRequired,
+export default class Units extends Component {
+    render() {
+        const { value, onChange } = this.props //options
+        return (
+            <span>
+                <h1>{value}</h1>
+                <select onChange={e => onChange(e.target.value)} value={value}>
+                    <option value="1" key="1"> Organisation Unit 1</option>
+                    <option value="2" key="2"> Organisation Unit 2</option>
+                    <option value="3" key="3"> Organisation Unit 3</option>
+                    <option value="4" key="4"> Organisation Unit 4</option>
+                </select>
+            </span>
+        )
+    }
 }
 
-export default Units
+//{options.map(option => (
+//                        <option value={option} key={option}>
+//                            {option}
+//                        </option>
+//                    ))} */
+
+Units.propTypes = {
+    //options: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    value: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired
+}

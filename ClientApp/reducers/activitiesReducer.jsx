@@ -1,22 +1,28 @@
-﻿import {
-    SELECT_UNIT,
+﻿import { combineReducers } from 'redux'
+import {
+    CHOOSE_ORGUNIT,
     REQUEST_ACTIVITIES,
-    RECEIVE_ACTIVITIES,
-    GET_ACTIVITIES_FAILURE
+    RECEIVE_ACTIVITIES
 } from '../actions/activities'
 
-const initialState = {
-    orgUnit: 0,
-    activities: []
+function chosenOrgUnit(state = 'reactjs', action) {
+    switch (action.type) {
+        case CHOOSE_ORGUNIT:
+            return action.orgUnitId
+        default:
+            return state
+    }
 }
 
-function activitiesReducer(state = initialState, action) {
+function activitiesState(
+    state = {
+        isFetching: false,
+        didInvalidate: false,
+        items: []
+    },
+    action
+) {
     switch (action.type) {
-        case SELECT_UNIT:
-            return {
-                ...state,
-                orgUnit: action.orgUnit,
-            };
         case REQUEST_ACTIVITIES:
             return Object.assign({}, state, {
                 isFetching: true,
@@ -26,7 +32,7 @@ function activitiesReducer(state = initialState, action) {
             return Object.assign({}, state, {
                 isFetching: false,
                 didInvalidate: false,
-                activities: action.activities,
+                items: action.activityList,
                 lastUpdated: action.receivedAt
             })
         default:
@@ -34,4 +40,21 @@ function activitiesReducer(state = initialState, action) {
     }
 }
 
-export default activitiesReducer;
+function activitiesByOrgUnit(state = {}, action) {
+    switch (action.type) {
+        case REQUEST_ACTIVITIES:
+        case RECEIVE_ACTIVITIES:
+            return Object.assign({}, state, {
+                [action.chosenOrgUnit]: activitiesState(state[action.orgUnitId], action)
+            })
+        default:
+            return state
+    }
+}
+
+const rootReducer = combineReducers({
+    chosenOrgUnit,
+    activitiesByOrgUnit,
+})
+
+export default rootReducer

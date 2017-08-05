@@ -7,36 +7,42 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactDom = require('react-dom');
 
-var _reactRedux = require('react-redux');
+var _Main = require('./containers/Main');
 
-var _redux = require('redux');
-
-var _activitiesStore = require('./store/activitiesStore');
-
-var _activitiesStore2 = _interopRequireDefault(_activitiesStore);
-
-var _main = require('./components/main');
-
-var _main2 = _interopRequireDefault(_main);
+var _Main2 = _interopRequireDefault(_Main);
 
 function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : { default: obj };
+  return obj && obj.__esModule ? obj : { default: obj };
 }
 
-var test = function test() {
-    return _react2.default.createElement('span', null, 'Test');
-};
+(0, _reactDom.render)(_react2.default.createElement(_Main2.default, null), document.getElementById('root'));
 
-(0, _reactDom.render)(_react2.default.createElement(_reactRedux.Provider, { store: _activitiesStore2.default }, _react2.default.createElement(_main2.default, null)), document.getElementById('root'));
+//import React from 'react'
+//import { render } from 'react-dom'
+//import { Provider } from 'react-redux'
+//import { createStore } from 'redux'
+//import store from './store/activitiesStore'
+//import Main from './components/main'
 
-},{"./components/main":5,"./store/activitiesStore":8,"react":219,"react-dom":53,"react-redux":188,"redux":227}],2:[function(require,module,exports){
+//const test = () => (
+//    <span>Test</span>
+//)
+
+//render(
+//    <Provider store={store}>
+//        <Main />
+//    </Provider>,
+//    document.getElementById('root')
+//)
+
+},{"./containers/Main":5,"react":219,"react-dom":53}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.RECEIVE_ACTIVITIES = exports.REQUEST_ACTIVITIES = exports.SELECT_UNIT = undefined;
-exports.selectUnit = selectUnit;
+exports.RECEIVE_ACTIVITIES = exports.REQUEST_ACTIVITIES = exports.CHOOSE_ORGUNIT = undefined;
+exports.chooseOrgUnit = chooseOrgUnit;
 exports.fetchActivities = fetchActivities;
 
 var _isomorphicFetch = require('isomorphic-fetch');
@@ -47,230 +53,108 @@ function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : { default: obj };
 }
 
-var SELECT_UNIT = exports.SELECT_UNIT = "SELECT_UNIT";
-
-function selectUnit(orgUnit) {
-    return {
-        type: SELECT_UNIT,
-        orgUnit: orgUnit
-    };
-}
-
+var CHOOSE_ORGUNIT = exports.CHOOSE_ORGUNIT = 'CHOOSE_ORGUNIT';
 var REQUEST_ACTIVITIES = exports.REQUEST_ACTIVITIES = 'REQUEST_ACTIVITIES';
-function requestActivities() {
+var RECEIVE_ACTIVITIES = exports.RECEIVE_ACTIVITIES = 'RECEIVE_ACTIVITIES';
+
+function chooseOrgUnit(orgUnitId) {
     return {
-        type: REQUEST_ACTIVITIES
+        type: CHOOSE_ORGUNIT,
+        orgUnitId: orgUnitId
     };
 }
 
-var RECEIVE_ACTIVITIES = exports.RECEIVE_ACTIVITIES = 'RECEIVE_ACTIVITIES';
-function receiveActivities(json) {
+function requestActivities(orgUnitId) {
+    return {
+        type: REQUEST_ACTIVITIES,
+        orgUnitId: orgUnitId
+    };
+}
+
+function receiveActivities(orgUnitId, json) {
     return {
         type: RECEIVE_ACTIVITIES,
-        items: json,
+        orgUnitId: orgUnitId,
+        activityList: json,
         receivedAt: Date.now()
     };
 }
 
-// Meet our first thunk action creator!
-// Though its insides are different, you would use it just like any other action creator:
-// store.dispatch(fetchActivities('reactjs'))
-function fetchActivities() {
-    // Thunk middleware knows how to handle functions.
-    // It passes the dispatch method as an argument to the function,
-    // thus making it able to dispatch actions itself.
-
+function fetchActivities(orgUnitId) {
     return function (dispatch) {
-        // First dispatch: the app state is updated to inform
-        // that the API call is starting.
-
-        dispatch(requestActivities());
-
-        // The function called by the thunk middleware can return a value,
-        // that is passed on as the return value of the dispatch method.
-
-        // In this case, we return a promise to wait for.
-        // This is not required by thunk middleware, but it is convenient for us.
-
-        return (0, _isomorphicFetch2.default)('/api/SampleData/WeatherForecasts?startDateIndex=1').then(function (response) {
+        dispatch(requestActivities(orgUnitId));
+        return (0, _isomorphicFetch2.default)('/api/data/Activities?orgUnitId=11').then(function (response) {
             return response.json();
-        },
-        // Do not use catch, because that will also catch
-        // any errors in the dispatch and resulting render,
-        // causing an loop of 'Unexpected batch number' errors.
-        // https://github.com/facebook/react/issues/6895
-        function (error) {
-            return console.log('An error occured.', error);
         }).then(function (json) {
-            return (
-                // We can dispatch many times!
-                // Here, we update the app state with the results of the API call.
-
-                dispatch(receiveActivities(json))
-            );
+            return dispatch(receiveActivities(orgUnitId, json));
         });
     };
 }
 
-//function selectDateAndUpdate(orgUnit, dispatch) {
-//    dispatch(selectUnit(date));
-//    dispatch(fetchActivities(true));
+//export const SELECT_UNIT = "SELECT_UNIT"
+
+//export function selectUnit(orgUnit) {
+//    return {
+//        type: SELECT_UNIT,
+//        orgUnit
+//    };
 //}
 
-//export {
-//    SELECT_UNIT,
-//    selectUnit,
-//    GET_ACTIVITIES_REQUEST,
-//    GET_ACTIVITIES_SUCCESS,
-//    GET_ACTIVITIES_FAILURE,
-//    fetchActivities,
-//};
-
-//import fetch from 'isomorphic-fetch'
-
-//const REQUEST_ACTIVITIES = 'REQUEST_ACTIVITIES'
-//const RECEIVE_ACTIVITIES = 'RECEIVE_ACTIVITIES'
-
+//export const REQUEST_ACTIVITIES = 'REQUEST_ACTIVITIES'
 //function requestActivities() {
-//  return {
-//    type: REQUEST_ACTIVITIES
-//  }
-//}
-
-//function receiveActivities(subreddit, json) {
-//  return {
-//    type: RECEIVE_ACTIVITIES,
-//    subreddit,
-//    activities: json.data.children.map(child => child.data),
-//    receivedAt: Date.now()
-//  }
-//}
-
-//function fetchActivities() {
-//  return dispatch => {
-//    dispatch(requestActivities(subreddit))
-//    return fetch(`/api/SampleData/WeatherForecasts?startDateIndex=1`)
-//      .then(response => response.json())
-//      .then(json => dispatch(receiveActivities(subreddit, json)))
-//  }
-//}
-
-//export { fetchActivities, REQUEST_ACTIVITIES, RECEIVE_ACTIVITIES, GET_POSTINGS_FAILURE };
-
-},{"isomorphic-fetch":35}],3:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _ActivityRow = require('./ActivityRow');
-
-var _ActivityRow2 = _interopRequireDefault(_ActivityRow);
-
-function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : { default: obj };
-}
-
-var tableStyle = {
-    border: '1px solid #ccc'
-};
-
-//class ActivityList extends Component {
-//    render() {
-//        return (
-//            <table style={tableStyle}>
-//                {this.props.activities.map(activity => (
-//                    <span>Test</span>
-//                    //<ActivityRow key={activity.id} {...activity} />
-//                ))}
-//            </table>
-//        )
+//    return {
+//        type: REQUEST_ACTIVITIES,
 //    }
 //}
 
-var ActivityList = function ActivityList(activities) {
-    return _react2.default.createElement('table', { style: tableStyle }, activities.map(function (activity) {
-        return _react2.default.createElement('span', null, activity.summary);
-    }));
-};
+//export const RECEIVE_ACTIVITIES = 'RECEIVE_ACTIVITIES'
+//function receiveActivities(json) {
+//    return {
+//        type: RECEIVE_ACTIVITIES,
+//        items: json,
+//        receivedAt: Date.now()
+//    }
+//}
 
-ActivityList.propTypes = {
-    activities: _propTypes2.default.arrayOf(_propTypes2.default.shape({
-        id: _propTypes2.default.number.isRequired,
-        summary: _propTypes2.default.string.isRequired
-    }).isRequired).isRequired
-};
+//// Meet our first thunk action creator!
+//// Though its insides are different, you would use it just like any other action creator:
+//// store.dispatch(fetchActivities('reactjs'))
+//export function fetchActivities() {
+//    // Thunk middleware knows how to handle functions.
+//    // It passes the dispatch method as an argument to the function,
+//    // thus making it able to dispatch actions itself.
 
-exports.default = ActivityList;
+//    return function (dispatch) {
+//        // First dispatch: the app state is updated to inform
+//        // that the API call is starting.
 
-},{"./ActivityRow":4,"prop-types":51,"react":219}],4:[function(require,module,exports){
-'use strict';
+//        dispatch(requestActivities())
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
+//        // The function called by the thunk middleware can return a value,
+//        // that is passed on as the return value of the dispatch method.
 
-var _react = require('react');
+//        // In this case, we return a promise to wait for.
+//        // This is not required by thunk middleware, but it is convenient for us.
 
-var _react2 = _interopRequireDefault(_react);
+//        return fetch(`/api/SampleData/WeatherForecasts?startDateIndex=1`)
+//            .then(
+//            response => response.json(),
+//            // Do not use catch, because that will also catch
+//            // any errors in the dispatch and resulting render,
+//            // causing an loop of 'Unexpected batch number' errors.
+//            // https://github.com/facebook/react/issues/6895
+//            error => console.log('An error occured.', error)
+//            )
+//            .then(json =>
+//                // We can dispatch many times!
+//                // Here, we update the app state with the results of the API call.
 
-var _propTypes = require('prop-types');
+//                dispatch(receiveActivities(json))
+//            )
+//    }
+//}
 
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : { default: obj };
-}
-
-var rowStyle = {
-    padding: '20'
-};
-
-var ActivityRow = function ActivityRow(activity) {
-    return _react2.default.createElement('tr', null, _react2.default.createElement('td', { style: rowStyle }, activity.summary));
-};
-
-ActivityRow.propTypes = {
-    text: _propTypes2.default.string.isRequired
-};
-
-exports.default = ActivityRow;
-
-},{"prop-types":51,"react":219}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _VisibleActivityList = require('../containers/VisibleActivityList');
-
-var _VisibleActivityList2 = _interopRequireDefault(_VisibleActivityList);
-
-function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : { default: obj };
-}
-
-var Main = function Main() {
-    return _react2.default.createElement('div', null, _react2.default.createElement(_VisibleActivityList2.default, null));
-};
-
-exports.default = Main;
-
-},{"../containers/VisibleActivityList":6,"react":219}],6:[function(require,module,exports){
+},{"isomorphic-fetch":35}],3:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -297,13 +181,125 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactRedux = require('react-redux');
+function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : { default: obj };
+}
 
-var _activities = require('../actions/activities');
+function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+    }
+}
 
-var _ActivityList = require('../components/ActivityList');
+function _possibleConstructorReturn(self, call) {
+    if (!self) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+}
 
-var _ActivityList2 = _interopRequireDefault(_ActivityList);
+function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+    }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var ActivityList = function (_Component) {
+    _inherits(ActivityList, _Component);
+
+    function ActivityList() {
+        _classCallCheck(this, ActivityList);
+
+        return _possibleConstructorReturn(this, (ActivityList.__proto__ || Object.getPrototypeOf(ActivityList)).apply(this, arguments));
+    }
+
+    _createClass(ActivityList, [{
+        key: 'render',
+        value: function render() {
+            console.log(this.props);
+            return _react2.default.createElement('ul', null, this.props.activities.map(function (activity, i) {
+                return _react2.default.createElement('li', { key: i }, activity.name);
+            }));
+        }
+    }]);
+
+    return ActivityList;
+}(_react.Component);
+
+exports.default = ActivityList;
+
+ActivityList.propTypes = {
+    activities: _propTypes2.default.array.isRequired
+
+    //import React, { Component }  from 'react'
+    //import PropTypes from 'prop-types'
+    //import ActivityRow from './ActivityRow'
+
+    //let tableStyle = {
+    //    border: '1px solid #ccc'
+    //};
+
+
+    ////class ActivityList extends Component {
+    ////    render() {
+    ////        return (
+    ////            <table style={tableStyle}>
+    ////                {this.props.activities.map(activity => (
+    ////                    <span>Test</span>
+    ////                    //<ActivityRow key={activity.id} {...activity} />
+    ////                ))}
+    ////            </table>
+    ////        )
+    ////    }
+    ////}
+
+    //const ActivityList = (activities) => (
+    //    <table style={tableStyle}>
+    //        {activities.map(activity => (
+    //            <span>{activity.summary}</span>
+    //        ))}    
+    //    </table>
+
+    //)
+
+    //ActivityList.propTypes = {
+    //    activities: PropTypes.arrayOf(
+    //        PropTypes.shape({
+    //            id: PropTypes.number.isRequired,
+    //            summary: PropTypes.string.isRequired,
+    //        }).isRequired
+    //    ).isRequired,
+    //}
+
+    //export default ActivityList
+
+};
+
+},{"prop-types":51,"react":219}],4:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () {
+    function defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+        }
+    }return function (Constructor, protoProps, staticProps) {
+        if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+    };
+}();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
 
 function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : { default: obj };
@@ -327,122 +323,397 @@ function _inherits(subClass, superClass) {
     }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 }
 
-var VisibleActivityList = function (_Component) {
-    _inherits(VisibleActivityList, _Component);
+var Units = function (_Component) {
+    _inherits(Units, _Component);
 
-    function VisibleActivityList(props) {
-        _classCallCheck(this, VisibleActivityList);
+    function Units() {
+        _classCallCheck(this, Units);
 
-        return _possibleConstructorReturn(this, (VisibleActivityList.__proto__ || Object.getPrototypeOf(VisibleActivityList)).call(this, props));
+        return _possibleConstructorReturn(this, (Units.__proto__ || Object.getPrototypeOf(Units)).apply(this, arguments));
     }
 
-    //handleChange(nextSubreddit) {
-    //    this.props.dispatch(selectSubreddit(nextSubreddit))
-    //    this.props.dispatch(fetchPostsIfNeeded(nextSubreddit))
-    //}
-
-    //handleRefreshClick(e) {
-    //    e.preventDefault()
-
-    //    const { dispatch, selectedSubreddit } = this.props
-    //    dispatch(invalidateSubreddit(selectedSubreddit))
-    //    dispatch(fetchPostsIfNeeded(selectedSubreddit))
-    //}
-
-    _createClass(VisibleActivityList, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            var dispatch = this.props.dispatch;
-
-            dispatch((0, _activities.fetchActivities)());
-
-            //this.props.fetchActivities();
-        }
-    }, {
+    _createClass(Units, [{
         key: 'render',
         value: function render() {
             var _props = this.props,
-                activities = _props.activities,
-                lastUpdated = _props.lastUpdated;
+                value = _props.value,
+                _onChange = _props.onChange; //options
 
-            return _react2.default.createElement('div', null, _react2.default.createElement(_ActivityList2.default, { activities: this.props.activities }));
+            return _react2.default.createElement('span', null, _react2.default.createElement('h1', null, value), _react2.default.createElement('select', { onChange: function onChange(e) {
+                    return _onChange(e.target.value);
+                }, value: value }, _react2.default.createElement('option', { value: '1', key: '1' }, ' Organisation Unit 1'), _react2.default.createElement('option', { value: '2', key: '2' }, ' Organisation Unit 2'), _react2.default.createElement('option', { value: '3', key: '3' }, ' Organisation Unit 3'), _react2.default.createElement('option', { value: '4', key: '4' }, ' Organisation Unit 4')));
         }
     }]);
 
-    return VisibleActivityList;
+    return Units;
 }(_react.Component);
 
-VisibleActivityList.propTypes = {
-    activities: _propTypes2.default.array.isRequired,
-    lastUpdated: _propTypes2.default.number,
-    dispatch: _propTypes2.default.func.isRequired
+//{options.map(option => (
+//                        <option value={option} key={option}>
+//                            {option}
+//                        </option>
+//                    ))} */
+
+exports.default = Units;
+Units.propTypes = {
+    //options: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    value: _propTypes2.default.string.isRequired,
+    onChange: _propTypes2.default.func.isRequired
+};
+
+},{"prop-types":51,"react":219}],5:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () {
+    function defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+            var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+        }
+    }return function (Constructor, protoProps, staticProps) {
+        if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+    };
+}();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+var _activitiesStore = require('../store/activitiesStore');
+
+var _activitiesStore2 = _interopRequireDefault(_activitiesStore);
+
+var _VisibleActivityList = require('./VisibleActivityList');
+
+var _VisibleActivityList2 = _interopRequireDefault(_VisibleActivityList);
+
+function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+    }
+}
+
+function _possibleConstructorReturn(self, call) {
+    if (!self) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+        throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+    }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var store = (0, _activitiesStore2.default)();
+
+var Main = function (_Component) {
+    _inherits(Main, _Component);
+
+    function Main() {
+        _classCallCheck(this, Main);
+
+        return _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).apply(this, arguments));
+    }
+
+    _createClass(Main, [{
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(_reactRedux.Provider, { store: store }, _react2.default.createElement(_VisibleActivityList2.default, null));
+        }
+    }]);
+
+    return Main;
+}(_react.Component);
+
+exports.default = Main;
+
+},{"../store/activitiesStore":8,"./VisibleActivityList":6,"react":219,"react-redux":188}],6:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+  };
+}();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactRedux = require('react-redux');
+
+var _activities = require('../actions/activities');
+
+var _Units = require('../components/Units');
+
+var _Units2 = _interopRequireDefault(_Units);
+
+var _ActivityList = require('../components/ActivityList');
+
+var _ActivityList2 = _interopRequireDefault(_ActivityList);
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var VisibilityActivityList = function (_Component) {
+  _inherits(VisibilityActivityList, _Component);
+
+  function VisibilityActivityList(props) {
+    _classCallCheck(this, VisibilityActivityList);
+
+    var _this = _possibleConstructorReturn(this, (VisibilityActivityList.__proto__ || Object.getPrototypeOf(VisibilityActivityList)).call(this, props));
+
+    _this.handleChange = _this.handleChange.bind(_this);
+    _this.handleRefreshClick = _this.handleRefreshClick.bind(_this);
+    return _this;
+  }
+
+  _createClass(VisibilityActivityList, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _props = this.props,
+          dispatch = _props.dispatch,
+          chosenOrgUnit = _props.chosenOrgUnit;
+
+      dispatch((0, _activities.fetchActivities)(chosenOrgUnit));
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      if (this.props.chosenOrgUnit !== prevProps.chosenOrgUnit) {
+        var _props2 = this.props,
+            dispatch = _props2.dispatch,
+            _chosenOrgUnit = _props2.chosenOrgUnit;
+
+        dispatch((0, _activities.fetchActivities)(_chosenOrgUnit));
+      }
+    }
+  }, {
+    key: 'handleChange',
+    value: function handleChange(nextOrgUnitId) {
+      this.props.dispatch((0, _activities.chooseOrgUnit)(nextOrgUnitId));
+      this.props.dispatch((0, _activities.fetchActivities)(nextOrgUnitId));
+    }
+  }, {
+    key: 'handleRefreshClick',
+    value: function handleRefreshClick(e) {
+      e.preventDefault();
+
+      var _props3 = this.props,
+          dispatch = _props3.dispatch,
+          chosenOrgUnit = _props3.chosenOrgUnit;
+
+      dispatch((0, _activities.fetchActivities)(chosenOrgUnit));
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props4 = this.props,
+          chosenOrgUnit = _props4.chosenOrgUnit,
+          activityList = _props4.activityList,
+          isFetching = _props4.isFetching,
+          lastUpdated = _props4.lastUpdated;
+
+      return _react2.default.createElement('div', null, _react2.default.createElement(_Units2.default, {
+        value: chosenOrgUnit,
+        onChange: this.handleChange
+      }), _react2.default.createElement('p', null, lastUpdated && _react2.default.createElement('span', null, 'Last updated at ', new Date(lastUpdated).toLocaleTimeString(), '.', ' '), 'B', !isFetching && _react2.default.createElement('a', { href: '#', onClick: this.handleRefreshClick }, 'Refresh')), activityList.length === 0 && _react2.default.createElement('h2', null, 'Empty.'), activityList.length > 0 && _react2.default.createElement('div', { style: { opacity: isFetching ? 0.5 : 1 } }, _react2.default.createElement(_ActivityList2.default, { activities: activityList })));
+    }
+  }]);
+
+  return VisibilityActivityList;
+}(_react.Component);
+
+VisibilityActivityList.propTypes = {
+  chosenOrgUnit: _propTypes2.default.string.isRequired,
+  activityList: _propTypes2.default.array.isRequired,
+  isFetching: _propTypes2.default.bool.isRequired,
+  lastUpdated: _propTypes2.default.number,
+  dispatch: _propTypes2.default.func.isRequired
 };
 
 function mapStateToProps(state) {
-    var activitiesReducer = state.activitiesReducer;
-    var _items = {
-        items: []
-    },
-        lastUpdated = _items.lastUpdated,
-        activities = _items.items;
+  var chosenOrgUnit = state.chosenOrgUnit,
+      activitiesByOrgUnit = state.activitiesByOrgUnit;
 
-    return {
-        activities: activities,
-        lastUpdated: lastUpdated
-    };
+  var _ref = activitiesByOrgUnit[chosenOrgUnit] || {
+    isFetching: true,
+    items: []
+  },
+      isFetching = _ref.isFetching,
+      lastUpdated = _ref.lastUpdated,
+      activityList = _ref.items;
+
+  return {
+    chosenOrgUnit: chosenOrgUnit,
+    activityList: activityList,
+    isFetching: isFetching,
+    lastUpdated: lastUpdated
+  };
 }
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(VisibleActivityList);
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(VisibilityActivityList);
+
+//class VisibleActivityList extends Component {
+//    constructor(props) {
+//        super(props)
+//    }
+
+//    //handleChange(nextSubreddit) {
+//    //    this.props.dispatch(selectSubreddit(nextSubreddit))
+//    //    this.props.dispatch(fetchPostsIfNeeded(nextSubreddit))
+//    //}
+
+//    //handleRefreshClick(e) {
+//    //    e.preventDefault()
+
+//    //    const { dispatch, selectedSubreddit } = this.props
+//    //    dispatch(invalidateSubreddit(selectedSubreddit))
+//    //    dispatch(fetchPostsIfNeeded(selectedSubreddit))
+//    //}
+
+//    componentDidMount() {
+//        const { dispatch } = this.props
+//        dispatch(fetchActivities())
+
+//        //this.props.fetchActivities();
+//    }
+
+//    render() {
+//        const { activities, lastUpdated } = this.props
+//        return (
+//            <div>
+//                <ActivityList activities={this.props.activities} />
+//            </div>
+//        )
+//    }
+//}
+
+//VisibleActivityList.propTypes = {
+//    activities: PropTypes.array.isRequired,
+//    lastUpdated: PropTypes.number,
+//    dispatch: PropTypes.func.isRequired
+//}
 
 //function mapStateToProps(state) {
-//    const { activities } = state.activities
-//    return {
-//        activities
-//    }
-//}
-
-//function mapDispatchToProps(dispatch) {
-//    return {
-//        fetchActivities() {
-//            dispatch(fetchActivities())
+//    const { activitiesReducer } = state
+//    const {
+//        lastUpdated,
+//        items: activities
+//  } = {
+//            items: []
 //        }
+
+//    return {
+//        activities,
+//        isFetching,
+//        lastUpdated
 //    }
 //}
-//export default connect(mapStateToProps, mapDispatchToProps)(VisibleActivityList)
 
-},{"../actions/activities":2,"../components/ActivityList":3,"prop-types":51,"react":219,"react-redux":188}],7:[function(require,module,exports){
+//export default connect(mapStateToProps)(VisibleActivityList)
+
+////function mapStateToProps(state) {
+////    const { activities } = state.activities
+////    return {
+////        activities
+////    }
+////}
+
+////function mapDispatchToProps(dispatch) {
+////    return {
+////        fetchActivities() {
+////            dispatch(fetchActivities())
+////        }
+////    }
+////}
+////export default connect(mapStateToProps, mapDispatchToProps)(VisibleActivityList)
+
+},{"../actions/activities":2,"../components/ActivityList":3,"../components/Units":4,"prop-types":51,"react":219,"react-redux":188}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];for (var key in source) {
-            if (Object.prototype.hasOwnProperty.call(source, key)) {
-                target[key] = source[key];
-            }
-        }
-    }return target;
-};
+var _redux = require('redux');
 
 var _activities = require('../actions/activities');
 
-var initialState = {
-    orgUnit: 0,
-    activities: []
-};
+function _defineProperty(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
+    } else {
+        obj[key] = value;
+    }return obj;
+}
 
-function activitiesReducer() {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+function chosenOrgUnit() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'reactjs';
     var action = arguments[1];
 
     switch (action.type) {
-        case _activities.SELECT_UNIT:
-            return _extends({}, state, {
-                orgUnit: action.orgUnit
-            });
+        case _activities.CHOOSE_ORGUNIT:
+            return action.orgUnitId;
+        default:
+            return state;
+    }
+}
+
+function activitiesState() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        isFetching: false,
+        didInvalidate: false,
+        items: []
+    };
+    var action = arguments[1];
+
+    switch (action.type) {
         case _activities.REQUEST_ACTIVITIES:
             return Object.assign({}, state, {
                 isFetching: true,
@@ -452,7 +723,7 @@ function activitiesReducer() {
             return Object.assign({}, state, {
                 isFetching: false,
                 didInvalidate: false,
-                activities: action.activities,
+                items: action.activityList,
                 lastUpdated: action.receivedAt
             });
         default:
@@ -460,14 +731,35 @@ function activitiesReducer() {
     }
 }
 
-exports.default = activitiesReducer;
+function activitiesByOrgUnit() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
 
-},{"../actions/activities":2}],8:[function(require,module,exports){
+    switch (action.type) {
+        case _activities.REQUEST_ACTIVITIES:
+        case _activities.RECEIVE_ACTIVITIES:
+            return Object.assign({}, state, _defineProperty({}, action.chosenOrgUnit, activitiesState(state[action.orgUnitId], action)));
+        default:
+            return state;
+    }
+}
+
+var rootReducer = (0, _redux.combineReducers)({
+    chosenOrgUnit: chosenOrgUnit,
+    activitiesByOrgUnit: activitiesByOrgUnit
+});
+
+exports.default = rootReducer;
+
+},{"../actions/activities":2,"redux":227}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.default = configureStore;
+
+var _redux = require('redux');
 
 var _reduxThunk = require('redux-thunk');
 
@@ -475,55 +767,21 @@ var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
 var _reduxLogger = require('redux-logger');
 
-var _redux = require('redux');
-
 var _activitiesReducer = require('../reducers/activitiesReducer');
 
 var _activitiesReducer2 = _interopRequireDefault(_activitiesReducer);
-
-var _activities = require('../actions/activities');
 
 function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : { default: obj };
 }
 
-var reducers = (0, _redux.combineReducers)({
-    activitiesReducer: _activitiesReducer2.default
-    //add other reducers here..
-    //combine auth..
-});
-
 var loggerMiddleware = (0, _reduxLogger.createLogger)();
 
-var store = (0, _redux.createStore)(reducers, (0, _redux.applyMiddleware)(_reduxThunk2.default, // lets us dispatch() functions
-loggerMiddleware // neat middleware that logs actions
-));
+function configureStore(preloadedState) {
+    return (0, _redux.createStore)(_activitiesReducer2.default, preloadedState, (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware));
+}
 
-//FOR TESTING:
-
-
-//// Log the initial state
-//console.log(store.getState())
-
-//// Every time the state changes, log it
-//// Note that subscribe() returns a function for unregistering the listener
-//let unsubscribe = store.subscribe(() =>
-//    console.log(store.getState())
-//)
-
-//// Dispatch some actions
-//store.dispatch(selectUnit(1))
-
-//store
-//    .dispatch(fetchActivities())
-//    .then(() => console.log(store.getState()))
-
-//// Stop listening to state updates
-//unsubscribe()
-
-exports.default = store;
-
-},{"../actions/activities":2,"../reducers/activitiesReducer":7,"redux":227,"redux-logger":220,"redux-thunk":221}],9:[function(require,module,exports){
+},{"../reducers/activitiesReducer":7,"redux":227,"redux-logger":220,"redux-thunk":221}],9:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

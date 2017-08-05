@@ -7,7 +7,7 @@ let rowStyle = {
 
 const ActivityRow = (activity) => (
     <tr>
-        <td style={rowStyle}>{activity.summary}</td>
+        <td style={rowStyle}>{activity.name}</td>
     </tr>
 )
 

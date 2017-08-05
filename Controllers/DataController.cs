@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApplicationBasic.Controllers
 {
     [Route("api/[controller]")]
-    public class SampleDataController : Controller
+    public class DataController : Controller
     {
         private static string[] Summaries = new[]
         {
@@ -25,6 +25,27 @@ namespace WebApplicationBasic.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             });
         }
+
+		[HttpGet("[action]")]
+		public IEnumerable<Activity> Activities(int orgUnitId)
+		{
+			var rand = new Random(1500);
+			return Enumerable.Range(0, 30)
+							.Select(a => 
+							{
+								int id = rand.Next();
+								return new Activity {
+									Id = id,
+									Name = string.Format("Activity name {0}", id)
+								};
+							});
+		}
+
+		public class Activity
+		{
+			public int Id { get; set; }
+			public string Name { get; set; }
+		}
 
         public class WeatherForecast
         {
