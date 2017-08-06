@@ -1,13 +1,18 @@
 ﻿import React from 'react'
 import PropTypes from 'prop-types'
 
-const UnitInfo = ({ selectedUnit }) => (
-    <span>
-        Selected unit is: {selectedUnit}
-    </span>
+const labelStyle = {
+    marginTop: 0,
+    fontSize: 16
+};
+
+const UnitInfo = (props) => (
+    <h3 style={labelStyle}>
+        Choose organisation unit: (Selected: {props.selectedUnit})
+    </h3>
 )
 
-Todo.propTypes = {
+UnitInfo.propTypes = {
     selectedUnit: PropTypes.string.isRequired
 }
 
