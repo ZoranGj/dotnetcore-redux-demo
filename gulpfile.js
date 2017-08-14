@@ -43,7 +43,8 @@
         sourcemaps = require('gulp-sourcemaps'),
         $ = require('gulp-load-plugins')({ lazy: true }),
         buffer = require('vinyl-buffer'),
-        requireDir = require('require-dir');
+        requireDir = require('require-dir'),
+        del = require('del');
 
     var f = {
         // Returning the names of the subfolders for the given folder path.
@@ -344,7 +345,35 @@
         ], ['lint']);
     });
 
-    gulp.task('build', gulpSync.sync(['lint', 'transpile'], 'build'));
+    var requirejs = require('gulp-requirejs');
+
+    gulp.task('clean-temp', function () {
+        return del(['dest']);
+    });
+
+    gulp.task('es6-amd', ['clean-temp'], function () {
+        return gulp.src(['app/*.js', 'app/**/*.js'])
+            .pipe(babel({ modules: "amd" }))
+            .pipe(gulp.dest('dest/temp'));
+    });
+
+    gulp.task('bundle-amd-clean', function () {
+        return del(['es5/amd']);
+    });
+
+    gulp.task('amd-bundle', ['bundle-amd-clean', 'es6-amd'], function () {
+        return requirejs({
+            name: 'modules',
+            baseUrl: 'dest/temp',
+            out: 'main.js'
+        })
+            .pipe(uglify())
+            .pipe(gulp.dest("es5/amd"));
+    });
+
+    gulp.task('amd', ['amd-bundle']);
+
+    gulp.task('build', gulpSync.sync(['lint', 'amd'], 'build'));
     gulp.task('publish', gulpSync.sync(['transpile', 'clean', 'minify'], 'publish'));
 
 }(require));

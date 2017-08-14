@@ -26,11 +26,10 @@
     "react-router-dom": "4.1.1",
     "react-router-redux": "5.0.0-alpha.6",
     "redux": "3.6.0",
-    "redux-thunk": "2.2.0",
+    "redux-thunk": "^2.2.0",
     "style-loader": "0.17.0",
     "typescript": "2.3.2",
     "url-loader": "0.5.8",
-
     "gulp": "3.9.1",
     "rimraf": "2.6.1",
     "gulp-uglify": "3.0.0",
@@ -53,7 +52,6 @@
     "map-stream": "0.0.6",
     "glob-all": "3.0.1",
     "gulp-changed": "^1.3.0",
-
     "gulp-slash": "1.1.3",
     "babel-eslint": "6.0.0",
     "babel-preset-react": "^6.5.0",
@@ -62,7 +60,6 @@
     "eslint-plugin-flow-vars": "^0.2.1",
     "require-dir": "0.3.0",
     "isomorphic-fetch": "^2.2.1",
-
     "gulp-browserify": "^0.5.1",
     "babelify": "7.3.0",
     "babel-preset-es2015": "^6.24.1",
@@ -70,7 +67,10 @@
     "gulp-sourcemaps": "^1.5.2",
     "vinyl-source-stream": "^1.1.0",
     "vinyl-buffer": "^1.0.0",
-    "redux-thunk": "^2.2.0",
     "redux-logger": "^3.0.6"
+  },
+  "devDependencies": {
+    "del": "^3.0.0",
+    "gulp-requirejs": "^1.0.0-rc2"
   }
 }
