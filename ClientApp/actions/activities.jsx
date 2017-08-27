@@ -1,7 +1,6 @@
 ﻿import fetch from 'isomorphic-fetch'
 
 export const CHOOSE_ORGUNIT = 'CHOOSE_ORGUNIT'
-export const REQUEST_UNITS = 'REQUEST_UNITS'
 export const RECEIVE_UNITS = 'RECEIVE_UNITS'
 export const REQUEST_ACTIVITIES = 'REQUEST_ACTIVITIES'
 export const RECEIVE_ACTIVITIES = 'RECEIVE_ACTIVITIES'
@@ -10,12 +9,6 @@ export function chooseOrgUnit(orgUnitId) {
     return {
         type: CHOOSE_ORGUNIT,
         orgUnitId
-    }
-}
-
-export function requestUnits() {
-    return {
-        type: REQUEST_UNITS
     }
 }
 
@@ -28,7 +21,6 @@ export function receiveUnits(json) {
 
 export function fetchUnits() {
     return dispatch => {
-        //dispatch(requestUnits())
         return fetch(`/api/data/Units`)
             .then(response => response.json())
             .then(json => dispatch(receiveUnits(json)));

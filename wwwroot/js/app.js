@@ -17,33 +17,14 @@ function _interopRequireDefault(obj) {
 
 (0, _reactDom.render)(_react2.default.createElement(_Main2.default, null), document.getElementById('root'));
 
-//import React from 'react'
-//import { render } from 'react-dom'
-//import { Provider } from 'react-redux'
-//import { createStore } from 'redux'
-//import store from './store/activitiesStore'
-//import Main from './components/main'
-
-//const test = () => (
-//    <span>Test</span>
-//)
-
-//render(
-//    <Provider store={store}>
-//        <Main />
-//    </Provider>,
-//    document.getElementById('root')
-//)
-
 },{"./containers/Main":7,"react":221,"react-dom":55}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.RECEIVE_ACTIVITIES = exports.REQUEST_ACTIVITIES = exports.RECEIVE_UNITS = exports.REQUEST_UNITS = exports.CHOOSE_ORGUNIT = undefined;
+exports.RECEIVE_ACTIVITIES = exports.REQUEST_ACTIVITIES = exports.RECEIVE_UNITS = exports.CHOOSE_ORGUNIT = undefined;
 exports.chooseOrgUnit = chooseOrgUnit;
-exports.requestUnits = requestUnits;
 exports.receiveUnits = receiveUnits;
 exports.fetchUnits = fetchUnits;
 exports.fetchActivities = fetchActivities;
@@ -57,7 +38,6 @@ function _interopRequireDefault(obj) {
 }
 
 var CHOOSE_ORGUNIT = exports.CHOOSE_ORGUNIT = 'CHOOSE_ORGUNIT';
-var REQUEST_UNITS = exports.REQUEST_UNITS = 'REQUEST_UNITS';
 var RECEIVE_UNITS = exports.RECEIVE_UNITS = 'RECEIVE_UNITS';
 var REQUEST_ACTIVITIES = exports.REQUEST_ACTIVITIES = 'REQUEST_ACTIVITIES';
 var RECEIVE_ACTIVITIES = exports.RECEIVE_ACTIVITIES = 'RECEIVE_ACTIVITIES';
@@ -66,12 +46,6 @@ function chooseOrgUnit(orgUnitId) {
     return {
         type: CHOOSE_ORGUNIT,
         orgUnitId: orgUnitId
-    };
-}
-
-function requestUnits() {
-    return {
-        type: REQUEST_UNITS
     };
 }
 
@@ -84,7 +58,6 @@ function receiveUnits(json) {
 
 function fetchUnits() {
     return function (dispatch) {
-        //dispatch(requestUnits())
         return (0, _isomorphicFetch2.default)('/api/data/Units').then(function (response) {
             return response.json();
         }).then(function (json) {
@@ -265,49 +238,6 @@ exports.default = ActivityList;
 
 ActivityList.propTypes = {
     activities: _propTypes2.default.array.isRequired
-
-    //import React, { Component }  from 'react'
-    //import PropTypes from 'prop-types'
-    //import ActivityRow from './ActivityRow'
-
-    //let tableStyle = {
-    //    border: '1px solid #ccc'
-    //};
-
-
-    ////class ActivityList extends Component {
-    ////    render() {
-    ////        return (
-    ////            <table style={tableStyle}>
-    ////                {this.props.activities.map(activity => (
-    ////                    <span>Test</span>
-    ////                    //<ActivityRow key={activity.id} {...activity} />
-    ////                ))}
-    ////            </table>
-    ////        )
-    ////    }
-    ////}
-
-    //const ActivityList = (activities) => (
-    //    <table style={tableStyle}>
-    //        {activities.map(activity => (
-    //            <span>{activity.summary}</span>
-    //        ))}    
-    //    </table>
-
-    //)
-
-    //ActivityList.propTypes = {
-    //    activities: PropTypes.arrayOf(
-    //        PropTypes.shape({
-    //            id: PropTypes.number.isRequired,
-    //            summary: PropTypes.string.isRequired,
-    //        }).isRequired
-    //    ).isRequired,
-    //}
-
-    //export default ActivityList
-
 };
 
 },{"./ActivityRow":4,"prop-types":53,"react":221}],4:[function(require,module,exports){
@@ -605,20 +535,20 @@ function _inherits(subClass, superClass) {
     }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 }
 
-var VisibilityActivityList = function (_Component) {
-    _inherits(VisibilityActivityList, _Component);
+var VisibleActivityList = function (_Component) {
+    _inherits(VisibleActivityList, _Component);
 
-    function VisibilityActivityList(props) {
-        _classCallCheck(this, VisibilityActivityList);
+    function VisibleActivityList(props) {
+        _classCallCheck(this, VisibleActivityList);
 
-        var _this = _possibleConstructorReturn(this, (VisibilityActivityList.__proto__ || Object.getPrototypeOf(VisibilityActivityList)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (VisibleActivityList.__proto__ || Object.getPrototypeOf(VisibleActivityList)).call(this, props));
 
         _this.handleChange = _this.handleChange.bind(_this);
         _this.handleRefreshClick = _this.handleRefreshClick.bind(_this);
         return _this;
     }
 
-    _createClass(VisibilityActivityList, [{
+    _createClass(VisibleActivityList, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
             var _props = this.props,
@@ -673,10 +603,10 @@ var VisibilityActivityList = function (_Component) {
         }
     }]);
 
-    return VisibilityActivityList;
+    return VisibleActivityList;
 }(_react.Component);
 
-VisibilityActivityList.propTypes = {
+VisibleActivityList.propTypes = {
     orgUnitList: _propTypes2.default.array.isRequired,
     orgUnit: _propTypes2.default.string.isRequired,
     activityList: _propTypes2.default.array.isRequired,
@@ -707,7 +637,7 @@ function mapStateToProps(state) {
     };
 }
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(VisibilityActivityList);
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(VisibleActivityList);
 
 },{"../actions/activities":2,"../components/ActivityList":3,"../components/Units":6,"prop-types":53,"react":221,"react-redux":190}],9:[function(require,module,exports){
 'use strict';
@@ -745,10 +675,6 @@ function orgUnitList() {
     var action = arguments[1];
 
     switch (action.type) {
-        //case REQUEST_UNITS:
-        //    return Object.assign({}, state, {
-        //        isFetching: true,
-        //    });
         case _activities.RECEIVE_UNITS:
             return action.unitList;
         default:

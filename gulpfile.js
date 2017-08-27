@@ -43,8 +43,7 @@
         sourcemaps = require('gulp-sourcemaps'),
         $ = require('gulp-load-plugins')({ lazy: true }),
         buffer = require('vinyl-buffer'),
-        requireDir = require('require-dir'),
-        del = require('del');
+        requireDir = require('require-dir');
 
     var f = {
         // Returning the names of the subfolders for the given folder path.
@@ -140,119 +139,6 @@
 
     gulp.task('minify', ['minify:css']);
 
-    //gulp.task('transpile:jsx', function () {
-    //    return gulp.src(globs.jsx)
-    //        .pipe($.changed(paths.js, { extension: '.js' }))
-    //        .pipe($.print())
-    //        .pipe($.babel({
-    //            presets: ['react', 'es2015' ]
-    //        }))
-    //        .on('error', function (error) {
-    //            console.log(error.message);
-    //            this.emit('end');
-    //        })
-    //        .pipe(gulp.dest(paths.js));
-    //});
-
-
-
-    //gulp.task('scripts', function () {
-    //    bundleApp(false);
-    //});
-
-    //gulp.task('deploy', function () {
-    //    bundleApp(true);
-    //});
-
-    //gulp.task('watch', function () {
-    //    gulp.watch(['./app/*.js'], ['scripts']);
-    //});
-
-    //// When running 'gulp' on the terminal this task will fire.
-    //// It will start watching for changes in every .js file.
-    //// If there's a change, the task 'scripts' defined above will fire.
-    //gulp.task('default', ['scripts', 'watch']);
-
-    //// Private Functions
-    //// ----------------------------------------------------------------------------
-    //function bundleApp(isProduction) {
-    //    scriptsCount++;
-    //    // Browserify will bundle all our js files together in to one and will let
-    //    // us use modules in the front end.
-    //    var appBundler = browserify(roots.app + 'App.jsx', {
-    //        extensions: ['.js', '.jsx'],
-    //        paths: ['./node_modules', roots.app],
-    //        //entries: './app/app.js',
-    //        debug: true
-    //    })
-
-    //    var dependencies = [
-    //        'react',
-    //        'react-dom'
-    //    ];
-    //    var scriptsCount = 0;
-    //    // If it's not for production, a separate vendors.js file will be created
-    //    // the first time gulp is run so that we don't have to rebundle things like
-    //    // react everytime there's a change in the js file
-    //    if (!isProduction && scriptsCount === 1) {
-    //        // create vendors.js for dev environment.
-    //        browserify({
-    //            require: dependencies,
-    //            debug: true
-    //        })
-    //            .bundle()
-    //            .on('error', gutil.log)
-    //            .pipe(source('vendor.js'))
-    //            .pipe(gulp.dest(paths.js));
-    //    }
-    //    if (!isProduction) {
-    //        // make the dependencies external so they dont get bundled by the 
-    //        // app bundler. Dependencies are already bundled in vendor.js for
-    //        // development environments.
-    //        dependencies.forEach(function (dep) {
-    //            appBundler.external(dep);
-    //        })
-    //    }
-
-    //    appBundler
-    //        // transform ES6 and JSX to ES5 with babelify
-    //        .transform("babelify", { presets: ["es2015", "react"] })
-    //        .bundle()
-    //        .on('error', gutil.log)
-    //        .pipe(source('app.js'))
-    //        .pipe(gulp.dest(paths.js));
-    //}
-
-    //gulp.task('transpile:es', function () {
-    //        let bundler = browserify(`${roots.app}App.jsx`,
-    //            {
-    //                debug: true,
-    //                extensions: ['.js', '.jsx'],
-    //                paths: ['./node_modules', roots.app],
-    //                cache: {},
-    //                packageCache: {},
-    //            });
-
-    //        bundler
-    //            .transform(babelify, { plugins: ['lodash'], presets: ['react', 'es2015', 'stage-2'] }).bundle();
-
-    //        function rebundle(file) {
-    //            return bundler
-    //                .bundle()
-    //                .on('error', (err) => {
-    //                    console.log('Browserify error:', err);
-    //                })
-    //                .pipe(source('app.js'))
-    //                .pipe(sourcemaps.init({ loadMaps: true }))
-    //                .pipe(sourcemaps.write('./'))
-    //                .pipe(gulp.dest(paths.js));
-    //        }
-
-    //        bundler.on('update', rebundle);
-    //        return rebundle();
-    //});
-
-
     function buildApp(watch) {
         var bundler = browserify(roots.app + 'App.jsx',
             {
@@ -297,20 +183,6 @@
         return buildApp(false);
     });
 
-    //gulp.task('transpile:jsx', function () {
-    //    return gulp.src(globs.jsx)
-    //        .pipe($.changed(paths.js, { extension: '.js' }))
-    //        .pipe($.print())
-    //        .pipe($.babel({
-    //            presets: ['react']
-    //        }))
-    //        .on('error', function (error) {
-    //            console.log(error.message);
-    //            this.emit('end');
-    //        })
-    //        .pipe(gulp.dest(paths.js));
-    //});
-
     gulp.task('transpile:sass', function () {
         return gulp.src(globs.sass)
             .pipe($.print())
@@ -345,35 +217,7 @@
         ], ['lint']);
     });
 
-    var requirejs = require('gulp-requirejs');
-
-    gulp.task('clean-temp', function () {
-        return del(['dest']);
-    });
-
-    gulp.task('es6-amd', ['clean-temp'], function () {
-        return gulp.src(['app/*.js', 'app/**/*.js'])
-            .pipe(babel({ modules: "amd" }))
-            .pipe(gulp.dest('dest/temp'));
-    });
-
-    gulp.task('bundle-amd-clean', function () {
-        return del(['es5/amd']);
-    });
-
-    gulp.task('amd-bundle', ['bundle-amd-clean', 'es6-amd'], function () {
-        return requirejs({
-            name: 'modules',
-            baseUrl: 'dest/temp',
-            out: 'main.js'
-        })
-            .pipe(uglify())
-            .pipe(gulp.dest("es5/amd"));
-    });
-
-    gulp.task('amd', ['amd-bundle']);
-
-    gulp.task('build', gulpSync.sync(['lint', 'amd'], 'build'));
+    gulp.task('build', gulpSync.sync(['lint', 'transpile'], 'build'));
     gulp.task('publish', gulpSync.sync(['transpile', 'clean', 'minify'], 'publish'));
 
 }(require));

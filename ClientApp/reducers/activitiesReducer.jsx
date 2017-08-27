@@ -18,10 +18,6 @@ function orgUnit(state = "1", action) {
 
 function orgUnitList(state = [], action) {
     switch (action.type) {
-        //case REQUEST_UNITS:
-        //    return Object.assign({}, state, {
-        //        isFetching: true,
-        //    });
         case RECEIVE_UNITS:
             return action.unitList;
         default:

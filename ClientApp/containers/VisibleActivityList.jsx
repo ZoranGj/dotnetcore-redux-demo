@@ -9,7 +9,7 @@ import {
 import Units from '../components/Units'
 import ActivityList from '../components/ActivityList'
 
-class VisibilityActivityList extends Component {
+class VisibleActivityList extends Component {
 
   constructor(props) {
     super(props)
@@ -60,7 +60,7 @@ class VisibilityActivityList extends Component {
   }
 }
 
-VisibilityActivityList.propTypes = {
+VisibleActivityList.propTypes = {
     orgUnitList: PropTypes.array.isRequired,
     orgUnit: PropTypes.string.isRequired,
     activityList: PropTypes.array.isRequired,
@@ -89,4 +89,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(VisibilityActivityList)
+export default connect(mapStateToProps)(VisibleActivityList)
